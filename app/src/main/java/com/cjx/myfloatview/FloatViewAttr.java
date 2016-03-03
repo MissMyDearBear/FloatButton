@@ -23,8 +23,4 @@ public class FloatViewAttr {
      * touchView 空间ID
      */
     public int viewID;
-
-    public IBinder token;
-
-
 }

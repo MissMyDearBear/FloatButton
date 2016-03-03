@@ -117,14 +117,3 @@ public class MyFloatView extends View {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
