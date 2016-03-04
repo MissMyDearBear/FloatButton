@@ -1,6 +1,6 @@
 package com.cjx.myfloatview;
 
-import android.os.IBinder;
+
 
 /**
  * Created by bear on 16/3/3.

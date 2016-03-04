@@ -33,6 +33,10 @@ public class MyFloatView extends View {
      */
     private ImageView mImageView;
     WindowManager.LayoutParams wmParams;
+    /**
+     * 最大屏幕的坐标
+     */
+    private float lagestX, lagestY;
 
     public MyFloatView(Activity context, FloatViewAttr Attr) {
         super(context);
@@ -43,30 +47,35 @@ public class MyFloatView extends View {
 
     public void iniFloatView() {
         mWindowManager = (WindowManager) con.getSystemService(Context.WINDOW_SERVICE);
+        lagestX = mWindowManager.getDefaultDisplay().getWidth();
+        lagestY = mWindowManager.getDefaultDisplay().getHeight();
         mView = LayoutInflater.from(con).inflate(attr.viewLayoutID, null);
         mImageView = (ImageView) mView.findViewById(attr.viewID);
         mImageView.setBackgroundColor(Color.TRANSPARENT);
         mImageView.setOnTouchListener(mTouchListener);
 
-        wmParams = new WindowManager.LayoutParams(0,40);
+        wmParams = new WindowManager.LayoutParams(0, 40);
         wmParams.width = 100;
         wmParams.height = 100;
-        wmParams.x=(int)attr.iniX;//实际对应的坐标x＝屏幕宽/2+attr.iniX
-        wmParams.y=(int)attr.iniY;//实际对应的坐标y＝屏幕高/2+attr.iniY
+        wmParams.x = (int) attr.iniX;//实际对应的坐标x＝屏幕宽/2+attr.iniX
+        wmParams.y = (int) attr.iniY;//实际对应的坐标y＝屏幕高/2+attr.iniY
         mWindowManager.addView(mView, wmParams);
     }
 
     private OnTouchListener mTouchListener = new OnTouchListener() {
         float lastX, lastY;
         int paramsX, paramsY;
+        int[] viewXandY = new int[2];
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-
+            mView.getLocationInWindow(viewXandY);
+            lagestX = viewXandY[0];
+            lagestY = viewXandY[1];
             final int action = event.getAction();
             float x = event.getRawX();
             float y = event.getRawY();
-            System.out.println("x="+x+",y="+y);
+            System.out.println("x=" + x + ",y=" + y);
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     motionActionDownEvent(x, y);
@@ -108,10 +117,10 @@ public class MyFloatView extends View {
         private void motionActionUpEvent(float x, float y) {
             int dx = (int) (x - lastX);
             int dy = (int) (y - lastY);
-          if(dx==0&&dy==0){
-              //点击事件
-              Toast.makeText(con,"你点击了我",Toast.LENGTH_SHORT).show();
-          }
+            if (dx == 0 && dy == 0) {
+                //点击事件
+                Toast.makeText(con, "你点击了我", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
