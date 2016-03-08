@@ -3,12 +3,18 @@ package com.cjx.myfloatview;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.util.HashMap;
+import java.util.Objects;
+
+import view.cjx.com.floatview.MainActivity;
 
 /**
  * Created by bear on 16/3/3.
@@ -17,7 +23,7 @@ public class MyFloatView extends View {
     /**
      * 上下文
      */
-    private Activity con;
+    private MainActivity con;
     /**
      * 浮动view的属性类
      */
@@ -31,24 +37,22 @@ public class MyFloatView extends View {
     /**
      * 浮动view
      */
-    private ImageView mImageView;
+    public ImageView mImageView;
     WindowManager.LayoutParams wmParams;
-    /**
-     * 最大屏幕的坐标
-     */
-    private float lagestX, lagestY;
+    Handler h=new Handler();
+    String flag="";
+    HashMap<String,Object>obj=new HashMap<String,Object>();
 
-    public MyFloatView(Activity context, FloatViewAttr Attr) {
+    public MyFloatView(MainActivity context, FloatViewAttr Attr, String flag) {
         super(context);
         this.con = context;
         this.attr = Attr;
+        this.flag=flag;
         iniFloatView();
     }
 
     public void iniFloatView() {
         mWindowManager = (WindowManager) con.getSystemService(Context.WINDOW_SERVICE);
-        lagestX = mWindowManager.getDefaultDisplay().getWidth();
-        lagestY = mWindowManager.getDefaultDisplay().getHeight();
         mView = LayoutInflater.from(con).inflate(attr.viewLayoutID, null);
         mImageView = (ImageView) mView.findViewById(attr.viewID);
         mImageView.setBackgroundColor(Color.TRANSPARENT);
@@ -60,18 +64,16 @@ public class MyFloatView extends View {
         wmParams.x = (int) attr.iniX;//实际对应的坐标x＝屏幕宽/2+attr.iniX
         wmParams.y = (int) attr.iniY;//实际对应的坐标y＝屏幕高/2+attr.iniY
         mWindowManager.addView(mView, wmParams);
+        obj.put("message","你点击了浮动按钮");
     }
 
     private OnTouchListener mTouchListener = new OnTouchListener() {
         float lastX, lastY;
         int paramsX, paramsY;
-        int[] viewXandY = new int[2];
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            mView.getLocationInWindow(viewXandY);
-            lagestX = viewXandY[0];
-            lagestY = viewXandY[1];
+
             final int action = event.getAction();
             float x = event.getRawX();
             float y = event.getRawY();
@@ -119,10 +121,14 @@ public class MyFloatView extends View {
             int dy = (int) (y - lastY);
             if (dx == 0 && dy == 0) {
                 //点击事件
-                Toast.makeText(con, "你点击了我", Toast.LENGTH_SHORT).show();
+               h.post(new Runnable() {
+                   @Override
+                   public void run() {
+                    con.floatAction(flag,obj);
+                   }
+               });
             }
         }
     };
-
 
 }
